@@ -39,9 +39,20 @@ body {
 .invoice-header h3 { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 900; }
 .invoice-header p, .project-block p, .notes p, .invoice-footer p { white-space: pre-line; color: #263244; margin-bottom: .25rem; }
 .invoice-meta { display: grid; justify-items: end; gap: 1.25rem; }
-.logo-placeholder { width: 118px; height: 118px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); font-weight: 900; border: 10px double #6d4bb1; background: radial-gradient(circle at 70% 30%, #f472b6, #fde047 45%, #22c55e 70%, #38bdf8); }
-dl { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .75rem; margin: 0; width: min(100%, 360px); }
-dt { color: var(--brand); text-transform: uppercase; font-size: .84rem; } dd { margin: 0; }
+.logo-placeholder {
+    width: 118px;
+    height: 118px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.logo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* or cover */
+}
 .project-block { margin: 2.5rem 0 2rem; } .project-block strong, .notes h4, .invoice-footer h4 { color: var(--brand); font-size: 1rem; }
 .invoice-table { min-width: 780px; }
 .invoice-table thead th { color: var(--brand); border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); text-align: center; }

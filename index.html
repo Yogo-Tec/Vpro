@@ -87,12 +87,42 @@
 
         <article class="invoice-page" id="invoicePreview">
           <header class="invoice-header">
-            <div><h2>INVOICE</h2><h3 data-view="companyName"></h3><p data-view="companyAddress"></p><p><span data-view="companyEmail"></span><br><span data-view="companyPhone"></span></p></div>
-            <div class="invoice-meta"><div class="logo-placeholder">
-    <img src="assets/images/logo/logo.png" alt="Company Logo">
-</div>
-<dl><dt>Project ID:</dt><dd data-view="projectId"></dd><dt>Date:</dt><dd data-view="invoiceDate"></dd><dt>Invoice ID:</dt><dd data-view="invoiceId"></dd><dt>Bill To:</dt><dd><span data-view="customerName"></span><br><span data-view="customerAddress"></span></dd><dt>Phone:</dt><dd data-view="customerPhone"></dd></dl></div>
-          </header>
+    <div>
+        <h2>INVOICE</h2>
+        <h3 data-view="companyName"></h3>
+        <p data-view="companyAddress"></p>
+        <p>
+            <span data-view="companyEmail"></span><br>
+            <span data-view="companyPhone"></span>
+        </p>
+    </div>
+
+    <div class="invoice-meta">
+        <div class="logo-placeholder">
+            <img src="./assets/images/logo/logo.png" alt="Company Logo">
+        </div>
+
+        <dl>
+            <dt>Project ID:</dt>
+            <dd data-view="projectId"></dd>
+
+            <dt>Date:</dt>
+            <dd data-view="invoiceDate"></dd>
+
+            <dt>Invoice ID:</dt>
+            <dd data-view="invoiceId"></dd>
+
+            <dt>Bill To:</dt>
+            <dd>
+                <span data-view="customerName"></span><br>
+                <span data-view="customerAddress"></span>
+            </dd>
+
+            <dt>Phone:</dt>
+            <dd data-view="customerPhone"></dd>
+        </dl>
+    </div>
+</header>
           <section class="project-block"><strong>Project Description:</strong><p data-view="projectDescription"></p></section>
           <div class="table-responsive invoice-table-wrap"><table class="table invoice-table align-middle"><thead><tr><th>S.No</th><th>Project</th><th>Material</th><th>Qty</th><th>Price / Unit</th><th>Amount</th><th class="no-print">Action</th></tr></thead><tbody id="itemsBody"></tbody></table></div>
           <section class="invoice-bottom"><div class="notes"><h4>Notes:</h4><p data-view="notes"></p></div><div class="totals"><div><span>Subtotal</span><strong id="subtotalView">₹0.00</strong></div><div><span>Tax / Extra</span><strong id="taxView">₹0.00</strong></div><div><span>Advance</span><strong id="advanceView">₹0.00</strong></div><div><span>Amount Paid</span><strong id="paidView">₹0.00</strong></div><div class="grand"><span>Grand Total</span><strong id="grandView">₹0.00</strong></div><div><span>Balance</span><strong id="balanceView">₹0.00</strong></div></div></section>
