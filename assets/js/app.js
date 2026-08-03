@@ -67,8 +67,109 @@ document.querySelector('#addItemBtn').addEventListener('click', () => { state.it
 document.querySelector('#clearItemsBtn').addEventListener('click', () => { if (confirm('Delete all invoice items?')) { state.items = []; render(); } });
 document.querySelector('#saveBtn').addEventListener('click', () => downloadXml());
 document.querySelector('#saveAsBtn').addEventListener('click', () => downloadXml(`${prompt('Save XML as', state.invoiceId || 'invoice') || 'invoice'}.xml`));
-document.querySelector('#printBtn').addEventListener('click', () => window.print());
+document.querySelector('#printBtn').addEventListener('click', async () => { try { await generateInvoicePdf(); } catch (error) { console.error(error); showToast('Failed to generate invoice PDF'); } });
 document.querySelector('#uploadXml').addEventListener('change', async e => { const file = e.target.files[0]; if (!file) return; const xml = new DOMParser().parseFromString(await file.text(), 'application/xml'); state.companyName = readXmlText(xml, 'company > name', state.companyName); state.companyAddress = readXmlText(xml, 'company > address', state.companyAddress); state.companyEmail = readXmlText(xml, 'company > email', state.companyEmail); state.companyPhone = readXmlText(xml, 'company > phone', state.companyPhone); state.customerName = readXmlText(xml, 'customer > name', state.customerName); state.customerAddress = readXmlText(xml, 'customer > address', state.customerAddress); state.customerPhone = readXmlText(xml, 'customer > phone', state.customerPhone); state.projectId = readXmlText(xml, 'project > id', state.projectId); state.projectDescription = readXmlText(xml, 'project > description', state.projectDescription); ['invoiceId', 'invoiceDate', 'tax', 'advance', 'amountPaid', 'notes', 'accountDetails'].forEach(key => state[key] = readXmlText(xml, key, state[key])); state.items = [...xml.querySelectorAll('items item')].map(item => ({ project: readXmlText(item, 'project'), material: readXmlText(item, 'material'), qty: numberValue(readXmlText(item, 'qty')), price: numberValue(readXmlText(item, 'price')) })); render(); showToast('XML uploaded and loaded'); });
+
+const pdfTemplateUrl = 'assets/templates/invoice-template.pdf';
+
+async function loadPdfTemplate() {
+  const response = await fetch(pdfTemplateUrl);
+  if (!response.ok) throw new Error(`Unable to load PDF template: ${response.status}`);
+  return response.arrayBuffer();
+}
+
+function formatCurrency(value) {
+  return rupee.format(numberValue(value));
+}
+
+function openPdf(blob) {
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
+async function generateInvoicePdf() {
+  const templateBytes = await loadPdfTemplate();
+  const pdfDoc = await PDFLib.PDFDocument.load(templateBytes);
+  const helvetica = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+  const helveticaBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+  const page = pdfDoc.getPage(0);
+  const drawText = (text, x, y, options = {}) => {
+    page.drawText(String(text), { x, y, size: options.size || 10, font: options.font || helvetica, color: PDFLib.rgb(0, 0, 0), maxWidth: options.maxWidth || 240 });
+  };
+
+  drawText('INVOICE', 40, 780, { size: 24, font: helveticaBold });
+  drawText(state.companyName, 40, 760, { size: 12, font: helveticaBold });
+  drawText(state.companyAddress, 40, 744, { maxWidth: 250 });
+  drawText(state.companyEmail, 40, 722, {});
+  drawText(state.companyPhone, 40, 708, {});
+
+  drawText('Invoice ID:', 340, 760, { font: helveticaBold });
+  drawText(state.invoiceId, 420, 760, {});
+  drawText('Date:', 340, 744, { font: helveticaBold });
+  drawText(state.invoiceDate, 380, 744, {});
+  drawText('Project ID:', 340, 728, { font: helveticaBold });
+  drawText(state.projectId, 410, 728, {});
+
+  drawText('Bill To:', 340, 700, { font: helveticaBold });
+  drawText(state.customerName, 340, 686, {});
+  drawText(state.customerAddress, 340, 670, { maxWidth: 220 });
+  drawText(state.customerPhone, 340, 652, {});
+
+  page.drawLine({ start: { x: 40, y: 640 }, end: { x: 555, y: 640 }, thickness: 1, color: PDFLib.rgb(0.2, 0.2, 0.2) });
+  drawText('S.No', 40, 628, { font: helveticaBold, size: 11 });
+  drawText('Project', 70, 628, { font: helveticaBold, size: 11 });
+  drawText('Material', 240, 628, { font: helveticaBold, size: 11 });
+  drawText('Qty', 360, 628, { font: helveticaBold, size: 11 });
+  drawText('Price / Unit', 400, 628, { font: helveticaBold, size: 11 });
+  drawText('Amount', 500, 628, { font: helveticaBold, size: 11 });
+
+  const rowYStart = 610;
+  const rowHeight = 18;
+  state.items.forEach((item, index) => {
+    const y = rowYStart - index * rowHeight;
+    if (y < 110) return;
+    drawText(String(index + 1), 40, y, { size: 10 });
+    drawText(item.project, 70, y, { maxWidth: 150, size: 10 });
+    drawText(item.material, 240, y, { maxWidth: 110, size: 10 });
+    drawText(String(item.qty), 365, y, { size: 10 });
+    drawText(formatCurrency(item.price), 400, y, { size: 10 });
+    drawText(formatCurrency(numberValue(item.qty) * numberValue(item.price)), 500, y, { size: 10 });
+  });
+
+  const subtotal = state.items.reduce((sum, item) => sum + numberValue(item.qty) * numberValue(item.price), 0);
+  const grand = subtotal + numberValue(state.tax);
+  const balance = grand - numberValue(state.advance) - numberValue(state.amountPaid);
+  const totalsX = 380;
+  let totalsY = 180;
+  drawText('Subtotal:', totalsX, totalsY, { font: helveticaBold });
+  drawText(formatCurrency(subtotal), 500, totalsY, { size: 10 });
+  totalsY -= 16;
+  drawText('Tax / Extra:', totalsX, totalsY, { font: helveticaBold });
+  drawText(formatCurrency(state.tax), 500, totalsY, { size: 10 });
+  totalsY -= 16;
+  drawText('Advance:', totalsX, totalsY, { font: helveticaBold });
+  drawText(formatCurrency(state.advance), 500, totalsY, { size: 10 });
+  totalsY -= 16;
+  drawText('Amount Paid:', totalsX, totalsY, { font: helveticaBold });
+  drawText(formatCurrency(state.amountPaid), 500, totalsY, { size: 10 });
+  totalsY -= 18;
+  drawText('Grand Total:', totalsX, totalsY, { font: helveticaBold, size: 11 });
+  drawText(formatCurrency(grand), 500, totalsY, { size: 11 });
+  totalsY -= 18;
+  drawText('Balance:', totalsX, totalsY, { font: helveticaBold, size: 11 });
+  drawText(formatCurrency(balance), 500, totalsY, { size: 11 });
+
+  drawText('Notes:', 40, 200, { font: helveticaBold });
+  drawText(state.notes, 40, 184, { maxWidth: 300, size: 10 });
+  drawText('Total Amount:', 40, 134, { font: helveticaBold });
+  drawText(amountInWords(grand), 40, 120, { maxWidth: 380, size: 10 });
+
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  openPdf(blob);
+  showToast('Invoice PDF generated');
+}
 
 Object.assign(state, JSON.parse(localStorage.getItem('vproBillingDraft') || '{}'));
 render();
