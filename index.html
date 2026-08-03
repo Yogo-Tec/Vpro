@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vpro Billing Software</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top shadow-sm">
+    <div class="container-fluid px-3 px-lg-4">
+      <a class="navbar-brand fw-bold" href="#">Vpro Billing</a>
+      <div class="d-flex gap-2 flex-wrap toolbar-actions">
+        <button class="btn btn-light btn-sm" id="saveBtn">Save XML</button>
+        <button class="btn btn-outline-light btn-sm" id="saveAsBtn">Save As</button>
+        <label class="btn btn-outline-light btn-sm mb-0" for="uploadXml">Upload XML</label>
+        <input class="d-none" type="file" id="uploadXml" accept=".xml,text/xml">
+        <button class="btn btn-warning btn-sm" id="printBtn">Print</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid py-4 px-3 px-lg-4">
+    <section class="row g-4 editor-shell">
+      <aside class="col-12 col-xl-4 no-print">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+          <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+              <div>
+                <p class="text-uppercase text-primary fw-bold small mb-1">Section 1</p>
+                <h1 class="h4 mb-1">Plan & structure</h1>
+                <p class="text-muted mb-0">Three-part workflow: company, customer/project, and invoice items.</p>
+              </div>
+              <span class="badge rounded-pill bg-success-subtle text-success">XML Ready</span>
+            </div>
+            <ol class="timeline mb-0">
+              <li><strong>Enter details</strong><span>Business, client, project and payment information.</span></li>
+              <li><strong>Edit bill rows</strong><span>Add, remove, delete and recalculate line items instantly.</span></li>
+              <li><strong>Save or print</strong><span>Download XML, upload XML later, save as a named file, or print.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="accordion shadow-sm rounded-4 overflow-hidden" id="billingEditor">
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#companyPanel">1. Company & invoice</button></h2>
+            <div id="companyPanel" class="accordion-collapse collapse show" data-bs-parent="#billingEditor"><div class="accordion-body row g-3">
+              <div class="col-12"><label class="form-label">Company name</label><input class="form-control bind" data-bind="companyName" value="Sri Mahavishnu Colour Graphicz"></div>
+              <div class="col-12"><label class="form-label">Address</label><textarea class="form-control bind" data-bind="companyAddress" rows="3">1073/3, P.K.N Road, Near Rathna Vilas Bus Stop, Sivakasi, Tamil Nadu - 626189</textarea></div>
+              <div class="col-md-6"><label class="form-label">Email</label><input class="form-control bind" data-bind="companyEmail" value="colourgraphiczdesigner@gmail.com"></div>
+              <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control bind" data-bind="companyPhone" value="+91 87784 83441, +91 84282 83232"></div>
+              <div class="col-md-4"><label class="form-label">Project ID</label><input class="form-control bind" data-bind="projectId" value="PRJ-001"></div>
+              <div class="col-md-4"><label class="form-label">Date</label><input type="date" class="form-control bind" data-bind="invoiceDate"></div>
+              <div class="col-md-4"><label class="form-label">Invoice ID</label><input class="form-control bind" data-bind="invoiceId" value="INV-001"></div>
+            </div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#customerPanel">2. Customer & project</button></h2>
+            <div id="customerPanel" class="accordion-collapse collapse" data-bs-parent="#billingEditor"><div class="accordion-body row g-3">
+              <div class="col-md-6"><label class="form-label">Bill to</label><input class="form-control bind" data-bind="customerName" value="Customer Name"></div>
+              <div class="col-md-6"><label class="form-label">Phone</label><input class="form-control bind" data-bind="customerPhone" value="+91 00000 00000"></div>
+              <div class="col-12"><label class="form-label">Customer address</label><textarea class="form-control bind" data-bind="customerAddress" rows="2">Customer address</textarea></div>
+              <div class="col-12"><label class="form-label">Project description</label><textarea class="form-control bind" data-bind="projectDescription" rows="2">Final design and print production work.</textarea></div>
+            </div></div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#paymentPanel">3. Payment & notes</button></h2>
+            <div id="paymentPanel" class="accordion-collapse collapse" data-bs-parent="#billingEditor"><div class="accordion-body row g-3">
+              <div class="col-md-4"><label class="form-label">Advance</label><input type="number" min="0" class="form-control bind calc" data-bind="advance" value="0"></div>
+              <div class="col-md-4"><label class="form-label">Amount paid</label><input type="number" min="0" class="form-control bind calc" data-bind="amountPaid" value="0"></div>
+              <div class="col-md-4"><label class="form-label">Tax / extra</label><input type="number" min="0" class="form-control bind calc" data-bind="tax" value="0"></div>
+              <div class="col-12"><label class="form-label">Notes</label><textarea class="form-control bind" data-bind="notes" rows="4">Final design files will be shared after 50% advance payment. Delivery within 7 days after final approval. Terms and conditions apply.</textarea></div>
+              <div class="col-12"><label class="form-label">Account details</label><textarea class="form-control bind" data-bind="accountDetails" rows="5">Account Name: YOGESWARAN S&#10;Account Number: 23100050311545&#10;IFSC Code: TMBL0000231&#10;Branch: THIRUTHANGAL&#10;Bank: Tamilnad Mercantile Bank</textarea></div>
+            </div></div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="col-12 col-xl-8">
+        <div class="card border-0 shadow-sm rounded-4 no-print mb-4">
+          <div class="card-body d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
+            <div><h2 class="h5 mb-1">Invoice line items</h2><p class="text-muted mb-0">Use Edit by typing directly. Remove deletes a row; Delete clears all rows.</p></div>
+            <div class="d-flex gap-2"><button class="btn btn-primary" id="addItemBtn">Add item</button><button class="btn btn-outline-danger" id="clearItemsBtn">Delete all</button></div>
+          </div>
+        </div>
+
+        <article class="invoice-page" id="invoicePreview">
+          <header class="invoice-header">
+            <div><h2>INVOICE</h2><h3 data-view="companyName"></h3><p data-view="companyAddress"></p><p><span data-view="companyEmail"></span><br><span data-view="companyPhone"></span></p></div>
+            <div class="invoice-meta"><div class="logo-placeholder">LOGO</div><dl><dt>Project ID:</dt><dd data-view="projectId"></dd><dt>Date:</dt><dd data-view="invoiceDate"></dd><dt>Invoice ID:</dt><dd data-view="invoiceId"></dd><dt>Bill To:</dt><dd><span data-view="customerName"></span><br><span data-view="customerAddress"></span></dd><dt>Phone:</dt><dd data-view="customerPhone"></dd></dl></div>
+          </header>
+          <section class="project-block"><strong>Project Description:</strong><p data-view="projectDescription"></p></section>
+          <div class="table-responsive invoice-table-wrap"><table class="table invoice-table align-middle"><thead><tr><th>S.No</th><th>Project</th><th>Material</th><th>Qty</th><th>Price / Unit</th><th>Amount</th><th class="no-print">Action</th></tr></thead><tbody id="itemsBody"></tbody></table></div>
+          <section class="invoice-bottom"><div class="notes"><h4>Notes:</h4><p data-view="notes"></p></div><div class="totals"><div><span>Subtotal</span><strong id="subtotalView">₹0.00</strong></div><div><span>Tax / Extra</span><strong id="taxView">₹0.00</strong></div><div><span>Advance</span><strong id="advanceView">₹0.00</strong></div><div><span>Amount Paid</span><strong id="paidView">₹0.00</strong></div><div class="grand"><span>Grand Total</span><strong id="grandView">₹0.00</strong></div><div><span>Balance</span><strong id="balanceView">₹0.00</strong></div></div></section>
+          <div class="amount-words">TOTAL AMOUNT: <span id="wordsView">Zero rupees only</span>.</div>
+          <footer class="invoice-footer"><div><h4>Account Details:</h4><p data-view="accountDetails"></p></div><div class="thanks"><h2>Thank you for choosing</h2><p data-view="companyName"></p><small>This is a system-generated document and does not require a signature.</small></div></footer>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3 no-print"><div id="appToast" class="toast align-items-center text-bg-primary border-0" role="alert"><div class="d-flex"><div class="toast-body" id="toastMessage">Saved</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

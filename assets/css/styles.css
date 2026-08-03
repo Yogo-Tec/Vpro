@@ -1,0 +1,74 @@
+:root {
+  --brand: #0878b9;
+  --ink: #172033;
+  --muted: #64748b;
+  --line: #d8dee8;
+  --paper: #ffffff;
+  --soft: #f4f8fb;
+}
+
+body {
+  background: linear-gradient(135deg, #eef7ff 0%, #f8fafc 45%, #eef2ff 100%);
+  color: var(--ink);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.app-navbar { background: linear-gradient(90deg, #075985, #0f9bd7); }
+.toolbar-actions { justify-content: flex-end; }
+.editor-shell { max-width: 1480px; margin: 0 auto; }
+.card, .accordion { backdrop-filter: blur(6px); }
+.form-label { color: #334155; font-weight: 700; font-size: .86rem; }
+.form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(8, 120, 185, .14); }
+
+.timeline { list-style: none; padding-left: 0; }
+.timeline li { border-left: 3px solid #bae6fd; padding: 0 0 1rem 1rem; position: relative; }
+.timeline li::before { content: ""; width: .75rem; height: .75rem; background: var(--brand); border-radius: 50%; position: absolute; left: -.47rem; top: .25rem; }
+.timeline span { display: block; color: var(--muted); font-size: .9rem; }
+
+.invoice-page {
+  background: var(--paper);
+  border-radius: 24px;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, .12);
+  margin: 0 auto;
+  max-width: 1120px;
+  min-height: 900px;
+  padding: clamp(1.25rem, 3vw, 3rem);
+}
+.invoice-header { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; align-items: start; }
+.invoice-header h2 { color: var(--brand); font-size: clamp(2.6rem, 7vw, 4.6rem); font-weight: 900; letter-spacing: .06em; margin: 0 0 1.5rem; }
+.invoice-header h3 { font-size: clamp(1.3rem, 3vw, 2rem); font-weight: 900; }
+.invoice-header p, .project-block p, .notes p, .invoice-footer p { white-space: pre-line; color: #263244; margin-bottom: .25rem; }
+.invoice-meta { display: grid; justify-items: end; gap: 1.25rem; }
+.logo-placeholder { width: 118px; height: 118px; border-radius: 50%; display: grid; place-items: center; color: var(--brand); font-weight: 900; border: 10px double #6d4bb1; background: radial-gradient(circle at 70% 30%, #f472b6, #fde047 45%, #22c55e 70%, #38bdf8); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .75rem; margin: 0; width: min(100%, 360px); }
+dt { color: var(--brand); text-transform: uppercase; font-size: .84rem; } dd { margin: 0; }
+.project-block { margin: 2.5rem 0 2rem; } .project-block strong, .notes h4, .invoice-footer h4 { color: var(--brand); font-size: 1rem; }
+.invoice-table { min-width: 780px; }
+.invoice-table thead th { color: var(--brand); border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); text-align: center; }
+.invoice-table td, .invoice-table th { border-color: var(--line); }
+.item-input { border: 0; border-bottom: 1px dashed transparent; border-radius: 0; min-width: 80px; background: transparent; }
+.item-input:focus { border-bottom-color: var(--brand); box-shadow: none; background: #f8fbff; }
+.invoice-bottom { display: grid; grid-template-columns: 1fr 340px; gap: 1.25rem; border-top: 2px solid var(--line); border-bottom: 2px solid var(--line); padding: 1rem 0; }
+.totals { border-left: 2px solid var(--line); padding-left: 1rem; }
+.totals div { display: flex; justify-content: space-between; gap: 1rem; padding: .38rem 0; text-transform: uppercase; }
+.totals span { font-weight: 800; } .totals .grand { color: #000; font-size: 1.1rem; border-top: 1px solid var(--line); margin-top: .25rem; }
+.amount-words { text-align: right; font-weight: 900; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+.invoice-footer { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem; margin-top: 3rem; align-items: end; }
+.thanks { text-align: center; } .thanks h2 { font-weight: 900; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+
+@media (max-width: 767px) {
+  .toolbar-actions { width: 100%; margin-top: .75rem; }
+  .toolbar-actions .btn, .toolbar-actions label { flex: 1 1 45%; }
+  .invoice-header, .invoice-bottom, .invoice-footer { grid-template-columns: 1fr; }
+  .invoice-meta { justify-items: start; }
+  .totals { border-left: 0; border-top: 2px solid var(--line); padding: 1rem 0 0; }
+  .amount-words { text-align: left; }
+}
+
+@media print {
+  body { background: white; }
+  .no-print, .navbar { display: none !important; }
+  .container-fluid, main { padding: 0 !important; }
+  .invoice-page { box-shadow: none; border-radius: 0; max-width: none; min-height: auto; padding: 18mm; }
+  .invoice-table { min-width: 0; font-size: 11px; }
+}
